@@ -1,13 +1,11 @@
 pylexertl
 =========
-
 This is the python bindings for lexertl17
 
 Building
 ========
 - Make sure you have python and cmake installed
 - If on Linux, make sure you have installed python3-dev
-
 ```
 cd 3rd
 git clone https://github.com/pybind/pybind11.git
@@ -35,4 +33,13 @@ print("ID: {}, Token: '{}'".format(results.id(), results.str()))
 pylexertl.lookup(sm, results)
 print("ID: {}, Token: '{}'".format(results.id(), results.str()))
 #pylexertl.dump(sm)
+```
+Output
+======
+
+```
+ID: 1, Token: '101'
+ID: 2, Token: 'Ben'
+ID: 1, Token: '200'
+ID: 2, Token: 'Hanson'
 ```
