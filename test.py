@@ -4,13 +4,14 @@ sm = pylexertl.state_machine()
 rules.push('\\d+', 1)
 rules.push('[A-Za-z]+', 2)
 pylexertl.build(rules, sm)
-results = pylexertl.match_results('101Ben200Hanson')
+
+results = pylexertl.match_results('101One200Two')
+# Look-ahead
 pylexertl.lookup(sm, results)
-print("ID: {}, Token: '{}'".format(results.id(), results.str()))
-pylexertl.lookup(sm, results)
-print("ID: {}, Token: '{}'".format(results.id(), results.str()))
-pylexertl.lookup(sm, results)
-print("ID: {}, Token: '{}'".format(results.id(), results.str()))
-pylexertl.lookup(sm, results)
-print("ID: {}, Token: '{}'".format(results.id(), results.str()))
-#pylexertl.dump(sm)
+
+while results.id():
+  print("ID: {}, Token: '{}'".format(results.id(), results.str()))
+  pylexertl.lookup(sm, results)
+
+print('')
+pylexertl.dump(sm)

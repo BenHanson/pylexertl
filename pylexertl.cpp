@@ -6,12 +6,34 @@
 #include "../lexertl17/include/lexertl/utf_iterators.hpp"
 
 namespace py = pybind11;
+
+#ifdef WIN32
+using lex_debug = lexertl::u32debug;
+using lex_generator = lexertl::u32generator;
+using lex_match = lexertl::u32cmatch;
+using lex_oss = std::basic_ostringstream<char32_t>;
+using lex_rules = lexertl::u32rules;
+using lex_sm = lexertl::u32state_machine;
+using lex_stream = std::basic_ostringstream<char32_t>;
+using lex_string = std::u32string;
 using utf8_in_iterator = lexertl::basic_utf8_in_iterator<const char*, char32_t>;
 using utf8_out_iterator = lexertl::basic_utf8_out_iterator<const char32_t*>;
+#else
+using lex_debug = lexertl::wdebug;
+using lex_generator = lexertl::wgenerator;
+using lex_match = lexertl::wcmatch;
+using lex_oss = std::wostringstream;
+using lex_rules = lexertl::wrules;
+using lex_sm = lexertl::wstate_machine;
+using lex_stream = std::wostringstream;
+using lex_string = std::wstring;
+using utf8_in_iterator = lexertl::basic_utf8_in_iterator<const char*, wchar_t>;
+using utf8_out_iterator = lexertl::basic_utf8_out_iterator<const wchar_t*>;
+#endif
 
 struct rules
 {
-    lexertl::u32rules _rules;
+    lex_rules _rules;
 
     rules()
     {
@@ -20,7 +42,7 @@ struct rules
     void push(const char* regex_, const uint16_t id_)
     {
         const char* end_ = regex_ + strlen(regex_);
-        std::u32string str_(utf8_in_iterator(regex_, end_),
+        lex_string str_(utf8_in_iterator(regex_, end_),
             utf8_in_iterator(end_, end_));
 
         _rules.push(str_, id_);
@@ -29,7 +51,7 @@ struct rules
     void push(const char* regex_, const uint16_t id_, const uint16_t user_id_)
     {
         const char* end_ = regex_ + strlen(regex_);
-        std::u32string str_(utf8_in_iterator(regex_, end_),
+        lex_string str_(utf8_in_iterator(regex_, end_),
             utf8_in_iterator(end_, end_));
 
         _rules.push(str_, id_, user_id_);
@@ -38,8 +60,8 @@ struct rules
 
 struct match_results
 {
-    std::u32string _input;
-    lexertl::u32cmatch _match;
+    lex_string _input;
+    lex_match _match;
 
     match_results(const char* input_) :
         _input(utf8_in_iterator(input_, input_ + strlen(input_)),
@@ -85,22 +107,22 @@ struct match_results
     }
 };
 
-void build(const rules& rules_, lexertl::u32state_machine& sm_)
+void build(const rules& rules_, lex_sm& sm_)
 {
-    lexertl::u32generator::build(rules_._rules, sm_);
+    lex_generator::build(rules_._rules, sm_);
 }
 
-void lookup(const lexertl::u32state_machine& sm_, match_results& results_)
+void lookup(const lex_sm& sm_, match_results& results_)
 {
     lexertl::lookup(sm_, results_._match);
 }
 
-void dump(const lexertl::u32state_machine& sm_)
+void dump(const lex_sm& sm_)
 {
-    std::basic_ostringstream<char32_t> ss_;
-    std::u32string ret_;
+    lex_oss ss_;
+    lex_string ret_;
 
-    lexertl::u32debug::dump(sm_, ss_);
+    lex_debug::dump(sm_, ss_);
     ret_ = ss_.str();
     std::cout << std::string(utf8_out_iterator(ret_.c_str(), ret_.c_str() + ret_.size()),
         utf8_out_iterator(ret_.c_str() + ret_.size(), ret_.c_str() + ret_.size()));
@@ -120,7 +142,7 @@ PYBIND11_MODULE(pylexertl, m)
             (const char*, const uint16_t, uint16_t)>
             (&rules::push));
 
-    py::class_<lexertl::u32state_machine>(m, "state_machine")
+    py::class_<lex_sm>(m, "state_machine")
         .def(py::init<>());
 
     py::class_<match_results>(m, "match_results")
