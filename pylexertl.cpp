@@ -2,8 +2,10 @@
 #include "../lexertl17/include/lexertl/generator.hpp"
 #include "../lexertl17/include/lexertl/lookup.hpp"
 #include "../lexertl17/include/lexertl/match_results.hpp"
-#include <pybind11/pybind11.h>
 #include "../lexertl17/include/lexertl/utf_iterators.hpp"
+
+#include <iostream>
+#include <pybind11/pybind11.h>
 
 namespace py = pybind11;
 
